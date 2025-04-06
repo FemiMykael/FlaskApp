@@ -1,52 +1,55 @@
 ---
 # tasks file for certbot
 
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Install Certbot and Nginx plugin
+  apt:
+    name: python3-certbot-nginx
+    state: present
+  become: yes
+
 - name: Install Nginx and Certbot
   apt:
-    name: 
+    name:
       - nginx
       - certbot
     state: present
-    update_cache: yes
+  become: yes
 
 - name: Start and enable Nginx
   service:
     name: nginx
     state: started
     enabled: yes
+  become: yes
 
 - name: Configure Nginx proxy (port 80 to 5000)
-  copy:
-    dest: /etc/nginx/sites-available/flask
-    content: |
-      server {
-          listen 80;
-          server_name group17.thersedia.com;
-          location / {
-              proxy_pass http://127.0.0.1:5000;
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-          }
-      }
-  notify: Restart Nginx
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+  become: yes
 
 - name: Enable config
-  file:
-    src: /etc/nginx/sites-available/flask
-    dest: /etc/nginx/sites-enabled/flask
-    state: link
+  command: nginx -t
+  become: yes
 
 - name: Remove default site
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
+  become: yes
 
 - name: Reload Nginx
   service:
     name: nginx
     state: reloaded
+  become: yes
 
 - name: Generate SSL with Let’s Encrypt
-  shell: certbot --nginx -d group17.thersedia.com --non-interactive --agree-tos -m you@example.com
-  args:
-    creates: /etc/letsencrypt/live/group17.thersedia.com/fullchain.pem
+  command: certbot --nginx -d group17.thersedia.com --non-interactive --agree-tos -m you@example.com
+  become: yes
+
