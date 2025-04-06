@@ -27,9 +27,23 @@
     dest: /opt/
     remote_src: yes
 
-- name: Install Python requirements
-  pip:
-    requirements: /opt/flaskapp/requirements.txt
+- name: Ensure python3-venv is installed
+  apt:
+    name: python3-venv
+    state: present
+  become: true
+
+- name: Create virtual environment
+  command: python3 -m venv /opt/flaskapp/venv
+  args:
+    creates: /opt/flaskapp/venv
+
+- name: Install Python requirements inside venv
+  shell: |
+    source /opt/flaskapp/venv/bin/activate
+    pip install -r /opt/flaskapp/requirements.txt
+  args:
+    executable: /bin/bash
 
 - name: Create systemd service for Flask app
   copy:
@@ -41,12 +55,17 @@
 
       [Service]
       WorkingDirectory=/opt/flaskapp
-      ExecStart=/usr/bin/python3 /opt/flaskapp/app.py
+      ExecStart=/opt/flaskapp/venv/bin/python /opt/flaskapp/app.py
       Restart=always
       User=ubuntu
+      Environment=PATH=/opt/flaskapp/venv/bin
 
       [Install]
       WantedBy=multi-user.target
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
 
 - name: Enable & start Flask service
   systemd:
