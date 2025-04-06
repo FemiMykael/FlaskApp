@@ -3,6 +3,9 @@
   hosts: FlaskServer
   become: yes
   
+  vars:
+    domain_name: "group17.thersedia.com" 
+
   roles:
     - certbot
     - mongodb
