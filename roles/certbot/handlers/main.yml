@@ -1,6 +1,5 @@
 ---
 # handlers file for certbot
----
 - name: Restart Nginx
   service:
     name: nginx
