@@ -1,13 +1,14 @@
 ---
 # tasks file for mongodb
+
 - name: Add MongoDB APT key
   apt_key:
     url: https://www.mongodb.org/static/pgp/server-6.0.asc
     state: present
 
-- name: Add MongoDB repo
+- name: Add MongoDB repo (use jammy to support Ubuntu 24.04)
   apt_repository:
-    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/6.0 multiverse"
+    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse"
     state: present
     filename: "mongodb-org-6.0"
 
@@ -25,3 +26,4 @@
     name: mongod
     state: started
     enabled: yes
+
