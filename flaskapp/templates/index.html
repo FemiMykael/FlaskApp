@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Secure Flask App</title>
+  <title>Secure Flask App - Admin</title>
 </head>
 <body>
-  <h1>Secure DevOps app deployed with verified artifact!</h1>
+  <h1>Admin Panel</h1>
+
+  <h2>Existing Messages</h2>
   <ul>
     {% for msg in messages %}
-      <li>{{ msg['text'] }}</li>
+      <li>
+        {{ msg['text'] }}
+        <form action="/delete/{{ msg['_id'] }}" method="POST" style="display:inline;">
+          <button type="submit">🗑 Delete</button>
+        </form>
+      </li>
     {% endfor %}
   </ul>
 
-  <br>
-  <a href="/add">➕ Add a New Message</a>
+  <h2>Add New Message</h2>
+  <form method="POST" action="/admin">
+    <input type="text" name="text" placeholder="Enter message" required>
+    <button type="submit">➕ Add</button>
+  </form>
+
+  <br><br>
+  <a href="/">⬅ Back to Home</a>
 </body>
 </html>
