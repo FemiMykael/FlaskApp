@@ -50,6 +50,6 @@
   become: yes
 
 - name: Generate SSL with Let’s Encrypt
-  command: certbot --nginx -d group17.thersedia.com --non-interactive --agree-tos -m you@example.com
+  command: certbot --nginx -d group17.thersedia.com --non-interactive --agree-tos -m femimykael@example.com
   become: yes
 
