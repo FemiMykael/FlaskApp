@@ -2,7 +2,9 @@
 # tasks file for certbot
  name: Install Nginx and Certbot
   apt:
-    name: ['nginx', 'python3-certbot-nginx']
+    name: 
+     - nginx
+     - certbot
     state: present
     update_cache: yes
 - name: Start and enable Nginx
