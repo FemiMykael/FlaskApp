@@ -1,18 +1,21 @@
 ---
 # tasks file for certbot
- name: Install Nginx and Certbot
+
+- name: Install Nginx and Certbot
   apt:
     name: 
-     - nginx
-     - certbot
+      - nginx
+      - certbot
     state: present
     update_cache: yes
+
 - name: Start and enable Nginx
   service:
     name: nginx
     state: started
     enabled: yes
-- name: Configure Nginx proxy (port 443 to 5000)
+
+- name: Configure Nginx proxy (port 80 to 5000)
   copy:
     dest: /etc/nginx/sites-available/flask
     content: |
@@ -26,20 +29,24 @@
           }
       }
   notify: Restart Nginx
+
 - name: Enable config
   file:
     src: /etc/nginx/sites-available/flask
     dest: /etc/nginx/sites-enabled/flask
     state: link
+
 - name: Remove default site
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
+
 - name: Reload Nginx
   service:
     name: nginx
     state: reloaded
+
 - name: Generate SSL with Let’s Encrypt
   shell: certbot --nginx -d group17.thersedia.com --non-interactive --agree-tos -m you@example.com
   args:
-    creates: /etc/letsencrypt/live/group17.thersedia.com/Sunday.pem
+    creates: /etc/letsencrypt/live/group17.thersedia.com/fullchain.pem
