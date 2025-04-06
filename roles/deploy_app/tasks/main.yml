@@ -1,15 +1,18 @@
 ---
 # tasks file for roles/deploy_app
+
 - name: Copy app archive
   copy:
-    src: ../artifacts/app.tar.gz
+    src: "{{ jenkins_workspace }}/artifacts/app.tar.gz"  # Use absolute path to Jenkins workspace
     dest: /opt/app.tar.gz
     mode: '0644'
+
 - name: Copy hash
   copy:
-    src: ../artifacts/hash.txt
+    src: "{{ jenkins_workspace }}/artifacts/hash.txt"  # Use absolute path to Jenkins workspace
     dest: /opt/hash.txt
     mode: '0644'
+
 - name: Verify SHA256 hash
   shell: |
     cd /opt
@@ -17,14 +20,17 @@
   register: hash_output
   failed_when: "'OK' not in hash_output.stdout"
   changed_when: false
+
 - name: Extract app
   unarchive:
     src: /opt/app.tar.gz
     dest: /opt/
     remote_src: yes
+
 - name: Install Python requirements
   pip:
     requirements: /opt/flaskapp/requirements.txt
+
 - name: Create systemd service
   copy:
     dest: /etc/systemd/system/secureflask.service
@@ -39,6 +45,7 @@
       User=ubuntu
       [Install]
       WantedBy=multi-user.target
+
 - name: Enable & start Flask
   systemd:
     name: secureflask
