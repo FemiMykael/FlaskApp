@@ -1,15 +1,15 @@
 ---
 # tasks file for roles/deploy_app
 
-- name: Copy app archive
+- name: Copy app archive from Jenkins workspace
   copy:
-    src: "{{ jenkins_workspace }}/artifacts/app.tar.gz"  # Use absolute path to Jenkins workspace
+    src: "{{ jenkins_workspace }}/artifacts/app.tar.gz"
     dest: /opt/app.tar.gz
     mode: '0644'
 
-- name: Copy hash
+- name: Copy hash from Jenkins workspace
   copy:
-    src: "{{ jenkins_workspace }}/artifacts/hash.txt"  # Use absolute path to Jenkins workspace
+    src: "{{ jenkins_workspace }}/artifacts/hash.txt"
     dest: /opt/hash.txt
     mode: '0644'
 
@@ -31,22 +31,24 @@
   pip:
     requirements: /opt/flaskapp/requirements.txt
 
-- name: Create systemd service
+- name: Create systemd service for Flask app
   copy:
     dest: /etc/systemd/system/secureflask.service
     content: |
       [Unit]
       Description=Secure Flask App
       After=network.target
+
       [Service]
       WorkingDirectory=/opt/flaskapp
       ExecStart=/usr/bin/python3 /opt/flaskapp/app.py
       Restart=always
       User=ubuntu
+
       [Install]
       WantedBy=multi-user.target
 
-- name: Enable & start Flask
+- name: Enable & start Flask service
   systemd:
     name: secureflask
     state: started
