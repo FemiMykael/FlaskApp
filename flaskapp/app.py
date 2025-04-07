@@ -36,7 +36,7 @@ def mark_complete(id):
     return redirect(url_for("admin"))
 
 @app.route("/edit/<id>", methods=["POST"])
-def edit_taskk(id):
+def edit_task(id):
     new_text = request.form.get("edit_text")
     if new_text:
         collection.update_one({"_id": ObjectId(id)}, {"$set": {"text": new_text}})
