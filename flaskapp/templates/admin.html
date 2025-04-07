@@ -47,8 +47,39 @@
       border-radius: 6px;
     }
 
-    form.delete-form {
-      display: inline;
+    .task-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .task-content input[type="checkbox"] {
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    .task-text {
+      min-width: 150px;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .edit-input {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .edit-icon {
+      background-color: #ffc107;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
     .delete-btn {
@@ -109,7 +140,23 @@
     <ul class="task-list">
       {% for task in messages %}
         <li>
-          <span>{{ task['text'] }}</span>
+          <div class="task-content">
+            <!-- Complete Checkbox -->
+            <form method="POST" action="/complete/{{ task['_id'] | string }}">
+              <input type="checkbox" name="completed" onchange="this.form.submit()" {% if task['completed'] %}checked{% endif %}>
+            </form>
+
+            <!-- Task Text -->
+            <span class="task-text">{{ task['text'] }}</span>
+
+            <!-- Edit Form -->
+            <form method="POST" action="/edit/{{ task['_id'] | string }}" style="display: flex; gap: 6px;">
+              <input type="text" name="edit_text" class="edit-input" placeholder="Edit task" required>
+              <button type="submit" class="edit-icon">Edit</button>
+            </form>
+          </div>
+
+          <!-- Delete Form -->
           <form action="/delete/{{ task['_id'] | string }}" method="POST" class="delete-form">
             <button type="submit" class="delete-btn">Delete</button>
           </form>
@@ -118,7 +165,6 @@
     </ul>
 
     <a href="{{ url_for('index') }}" class="back-link">&larr; Back to Home</a>
-
   </div>
 </body>
 </html>
