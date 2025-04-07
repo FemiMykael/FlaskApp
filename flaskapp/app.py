@@ -42,5 +42,6 @@ def edit_task(id):
         collection.update_one({"_id": ObjectId(id)}, {"$set": {"text": new_text}})
     return redirect(url_for("admin"))
 
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

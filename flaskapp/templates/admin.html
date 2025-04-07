@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Secure Flask App - Admin</title>
+  <title>Admin Panel</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
-      color: #333;
-      margin: 0;
       padding: 40px;
+      margin: 0;
+      color: #333;
     }
 
     .container {
@@ -23,12 +23,6 @@
 
     h1 {
       color: #007BFF;
-      margin-bottom: 20px;
-    }
-
-    h2 {
-      margin-top: 30px;
-      color: #333;
     }
 
     ul.task-list {
@@ -36,13 +30,13 @@
       padding: 0;
     }
 
-    ul.task-list li {
+    li {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: #f9f9f9;
       border: 1px solid #ddd;
-      padding: 12px 16px;
+      padding: 12px;
       margin-bottom: 10px;
       border-radius: 6px;
     }
@@ -54,48 +48,36 @@
       flex: 1;
     }
 
-    .task-content input[type="checkbox"] {
-      transform: scale(1.2);
-      cursor: pointer;
-    }
-
-    .task-text {
-      min-width: 150px;
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
     .edit-input {
-      padding: 5px;
-      border: 1px solid #ccc;
+      padding: 6px;
       border-radius: 4px;
+      border: 1px solid #ccc;
     }
 
-    .edit-icon {
-      background-color: #ffc107;
-      color: white;
-      border: none;
+    .save-btn, .delete-btn, .edit-btn {
       padding: 6px 12px;
       border-radius: 4px;
+      border: none;
       cursor: pointer;
+    }
+
+    .save-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .edit-btn {
+      background-color: #ffc107;
+      color: white;
     }
 
     .delete-btn {
       background-color: #dc3545;
       color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
     }
 
     .add-task-form {
       margin-top: 20px;
-    }
-
-    .add-task-row {
       display: flex;
       gap: 10px;
     }
@@ -108,16 +90,16 @@
     }
 
     .add-task-form button {
-      background-color: #28a745;
+      background-color: #007BFF;
       color: white;
-      border: none;
       padding: 10px 16px;
+      border: none;
       border-radius: 6px;
       cursor: pointer;
     }
 
     .back-link {
-      display: inline-block;
+      display: block;
       margin-top: 30px;
       color: #007BFF;
       text-decoration: none;
@@ -128,36 +110,36 @@
   <div class="container">
     <h1>Admin Panel</h1>
 
-    <h2>Add a New Task</h2>
     <form method="POST" action="/admin" class="add-task-form">
-      <div class="add-task-row">
-        <input type="text" name="text" placeholder="Enter a task..." required>
-        <button type="submit">Add Task</button>
-      </div>
+      <input type="text" name="text" placeholder="Enter a new task..." required>
+      <button type="submit">Add Task</button>
     </form>
 
-    <h2>Existing Tasks</h2>
-    <ul class="task-list">
+    <ul class="task-listt">
       {% for task in messages %}
+        {% set task_id = task['_id'] | string %}
         <li>
           <div class="task-content">
-            <!-- Complete Checkbox -->
-            <form method="POST" action="/complete/{{ task['_id'] | string }}">
-              <input type="checkbox" name="completed" onchange="this.form.submit()" {% if task['completed'] %}checked{% endif %}>
+            <!-- Completion checkbox -->
+            <form method="POST" action="/complete/{{ task_id }}">
+              <input type="checkbox" name="completed" onchange="this.form.submit()" {% if task.get('completed', False) %}checked{% endif %}>
             </form>
 
-            <!-- Task Text -->
-            <span class="task-text">{{ task['text'] }}</span>
+            <!-- Task text -->
+            <span id="text-{{ task_id }}">{{ task['text'] }}</span>
 
-            <!-- Edit Form -->
-            <form method="POST" action="/edit/{{ task['_id'] | string }}" style="display: flex; gap: 6px;">
-              <input type="text" name="edit_text" class="edit-input" placeholder="Edit task" required>
-              <button type="submit" class="edit-icon">Edit</button>
+            <!-- Hidden edit form -->
+            <form method="POST" action="/edit/{{ task_id }}" id="form-{{ task_id }}" style="display: none;">
+              <input type="text" name="edit_text" class="edit-input" value="{{ task['text'] }}" required>
+              <button type="submit" class="save-btn">Save</button>
             </form>
+
+            <!-- Edit icon button -->
+            <button type="button" class="edit-btn" onclick="toggleEdit('{{ task_id }}')">✏️</button>
           </div>
 
-          <!-- Delete Form -->
-          <form action="/delete/{{ task['_id'] | string }}" method="POST" class="delete-form">
+          <!-- Delete form -->
+          <form method="POST" action="/delete/{{ task_id }}">
             <button type="submit" class="delete-btn">Delete</button>
           </form>
         </li>
@@ -166,5 +148,20 @@
 
     <a href="{{ url_for('index') }}" class="back-link">&larr; Back to Home</a>
   </div>
+
+  <script>
+    function toggleEdit(id) {
+      const textEl = document.getElementById('text-' + id);
+      const formEl = document.getElementById('form-' + id);
+
+      if (formEl.style.display === 'none') {
+        textEl.style.display = 'none';
+        formEl.style.display = 'inline-flex';
+      } else {
+        textEl.style.display = 'inline';
+        formEl.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>
