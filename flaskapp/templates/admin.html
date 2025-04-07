@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 40px;
+      margin: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #007BFF;
+    }
+
+    ul.task-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+
+    .task-content {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      gap: 10px;
+    }
+
+    .edit-input {
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .save-btn, .delete-btn, .edit-btn {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .save-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .edit-btn {
+      /* background-color: #ffc107; */
+      color: rgb(32, 32, 32);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .add-task-form {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .add-task-form input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .add-task-form button {
+      background-color: #007BFF;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 30px;
+      color: #007BFF;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Panel</h1>
+
+    <form method="POST" action="/admin" class="add-task-form">
+      <input type="text" name="text" placeholder="Enter a new task..." required>
+      <button type="submit">Add Task</button>
+    </form>
+
+    <ul class="task-list">
+      {% for task in messages %}
+        {% set task_id = task['_id'] | string %}
+        <li>
+          <div class="task-content">
+            <!-- Completion checkbox -->
+            <form method="POST" action="/complete/{{ task_id }}">
+              <input type="checkbox" name="completed" onchange="this.form.submit()" {% if task.get('completed', False) %}checked{% endif %}>
+            </form>
+
+            <!-- Task text -->
+            <span id="text-{{ task_id }}">{{ task['text'] }}</span>
+
+            <!-- Hidden edit form -->
+            <form method="POST" action="/edit/{{ task_id }}" id="form-{{ task_id }}" style="display: none;">
+              <input type="text" name="edit_text" class="edit-input" value="{{ task['text'] }}" required>
+              <button type="submit" class="save-btn">Save</button>
+            </form>
+          </div>
+
+          <!-- Edit + Delete buttons -->
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="edit-btn" onclick="toggleEdit('{{ task_id }}')" title="Edit">&#128397;</button> <!-- 🖉 -->
+            <form method="POST" action="/delete/{{ task_id }}">
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('index') }}" class="back-link">&larr; Back to Home</a>
+  </div>
+
+  <script>
+    function toggleEdit(id) {
+      const textEl = document.getElementById('text-' + id);
+      const formEl = document.getElementById('form-' + id);
+
+      if (formEl.style.display === 'none') {
+        textEl.style.display = 'none';
+        formEl.style.display = 'inline-flex';
+      } else {
+        textEl.style.display = 'inline';
+        formEl.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

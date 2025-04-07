@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure DevOps Deployment</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 40px;">
+
+  <div style="max-width: 800px; margin: auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    
+    <h1 style="color: #007BFF; margin-bottom: 10px;">Secure DevOps App Deployed Successfully</h1>
+    <p style="font-size: 1.1em; color: #555;">
+      This project, completed by <strong>Team 17</strong>, demonstrates the deployment of a secure web application built with either Flask or Node.js. The application is hosted on an EC2 instance as well as the Jenkins master and Jenkins Agent.
+    </p>
+    <p style="font-size: 1.1em; color: #555;">
+      A key focus of this project is security: the app is served over HTTPS using Nginx and Let's Encrypt, and it connects to a MongoDB backend populated with starter data. 
+    </p>
+    <!-- <p style="font-size: 1.1em; color: #555;">
+      The result is a production-grade application securely deployed and accessible over HTTPS on port 443, displaying the message: <em>"Secure DevOps app deployed with verified artifact!"</em>
+    </p> -->
+
+    <hr style="margin: 40px 0;">
+
+    <h3 style="color: #333;">Meet the Team</h3>
+    <ul style="padding-left: 20px; line-height: 1.8; font-size: 1.05em; color: #444; text-align: left;" >
+      <li>Femi Olatunde</li>
+      <li>Ibinabo Abraham</li>
+      <li>Denzel Ogheze</li>
+    </ul>
+
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="{{ url_for('admin') }}" style="text-decoration: none; background-color: #28a745; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; display: inline-block;">
+        Go to Admin Panel
+      </a>
+      
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+---
+# tasks file for certbot
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Install Certbot and Nginx plugin
+  apt:
+    name: python3-certbot-nginx
+    state: present
+  become: yes
+
+- name: Install Nginx and Certbot
+  apt:
+    name:
+      - nginx
+      - certbot
+    state: present
+  become: yes
+
+- name: Start and enable Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Configure Nginx proxy (port 80 to 5000)
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+  become: yes
+
+- name: Enable config
+  command: nginx -t
+  become: yes
+
+- name: Remove default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: yes
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded
+  become: yes
+
+- name: Generate SSL with Let’s Encrypt
+  command: certbot --nginx -d group17.thersedia.com --non-interactive --agree-tos -m femimykael@yahoo.com
+  become: yes
+

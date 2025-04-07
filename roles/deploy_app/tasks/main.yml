@@ -1,0 +1,74 @@
+---
+# tasks file for roles/deploy_app
+
+- name: Copy app archive from Jenkins workspace
+  copy:
+    src: "{{ jenkins_workspace }}/artifacts/app.tar.gz"
+    dest: /opt/app.tar.gz
+    mode: '0644'
+
+- name: Copy hash from Jenkins workspace
+  copy:
+    src: "{{ jenkins_workspace }}/artifacts/hash.txt"
+    dest: /opt/hash.txt
+    mode: '0644'
+
+- name: Verify SHA256 hash
+  shell: |
+    cd /opt
+    sha256sum -c hash.txt
+  register: hash_output
+  failed_when: "'OK' not in hash_output.stdout"
+  changed_when: false
+
+- name: Extract app
+  unarchive:
+    src: /opt/app.tar.gz
+    dest: /opt/
+    remote_src: yes
+
+- name: Ensure python3-venv is installed
+  apt:
+    name: python3-venv
+    state: present
+  become: true
+
+- name: Create virtual environment
+  command: python3 -m venv /opt/flaskapp/venv
+  args:
+    creates: /opt/flaskapp/venv
+
+- name: Install Python requirements inside venv
+  shell: |
+    source /opt/flaskapp/venv/bin/activate
+    pip install -r /opt/flaskapp/requirements.txt
+  args:
+    executable: /bin/bash
+
+- name: Create systemd service for Flask app
+  copy:
+    dest: /etc/systemd/system/secureflask.service
+    content: |
+      [Unit]
+      Description=Secure Flask App
+      After=network.target
+
+      [Service]
+      WorkingDirectory=/opt/flaskapp
+      ExecStart=/opt/flaskapp/venv/bin/python /opt/flaskapp/app.py
+      Restart=always
+      User=ubuntu
+      Environment=PATH=/opt/flaskapp/venv/bin
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable & start Flask service
+  systemd:
+    name: secureflask
+    state: started
+    enabled: yes
