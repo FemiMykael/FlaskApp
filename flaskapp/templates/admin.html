@@ -44,8 +44,8 @@
     .task-content {
       display: flex;
       align-items: center;
-      gap: 10px;
       flex: 1;
+      gap: 10px;
     }
 
     .edit-input {
@@ -55,10 +55,11 @@
     }
 
     .save-btn, .delete-btn, .edit-btn {
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 4px;
       border: none;
       cursor: pointer;
+      font-size: 14px;
     }
 
     .save-btn {
@@ -67,8 +68,10 @@
     }
 
     .edit-btn {
-      background-color: #ffc107;
-      color: white;
+      /* background-color: #ffc107; */
+      color: rgb(32, 32, 32);
+      font-size: 16px;
+      cursor: pointer;
     }
 
     .delete-btn {
@@ -115,7 +118,7 @@
       <button type="submit">Add Task</button>
     </form>
 
-    <ul class="task-listt">
+    <ul class="task-list">
       {% for task in messages %}
         {% set task_id = task['_id'] | string %}
         <li>
@@ -133,15 +136,15 @@
               <input type="text" name="edit_text" class="edit-input" value="{{ task['text'] }}" required>
               <button type="submit" class="save-btn">Save</button>
             </form>
-
-            <!-- Edit icon button -->
-            <button type="button" class="edit-btn" onclick="toggleEdit('{{ task_id }}')">✏️</button>
           </div>
 
-          <!-- Delete form -->
-          <form method="POST" action="/delete/{{ task_id }}">
-            <button type="submit" class="delete-btn">Delete</button>
-          </form>
+          <!-- Edit + Delete buttons -->
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="edit-btn" onclick="toggleEdit('{{ task_id }}')" title="Edit">&#128397;</button> <!-- 🖉 -->
+            <form method="POST" action="/delete/{{ task_id }}">
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
+          </div>
         </li>
       {% endfor %}
     </ul>
